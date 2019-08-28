@@ -1,0 +1,122 @@
+<div class="container">
+
+  <div class="row">
+
+    <div class="col-sm">
+
+      <div style="text-align:center">
+        <h1>
+          Welcome to {{ title }}
+        </h1>
+        <img width="300" alt="Angular Logo" src="../assets/images/pizza-logo.png">
+      </div>
+
+    </div>
+
+  </div>
+
+  <div class="row"
+       style="display: flex; flex: 1; flex-direction: row; flex-wrap: nowrap; width: 100%; align-items: center; justify-content: center"
+  >
+    <div *ngFor="let pizza of pizzas" class="col-sm">
+      <button type="button" class="btn btn-danger btn-lg" style="width: 100%"
+              (click)="createPizzaOrder(pizza, null)">
+        {{pizza.size}} @{{pizza.price}}
+      </button>
+    </div>
+  </div>
+
+  <br>
+
+  <div style="padding: 10px; max-height: 400px; overflow: auto;" *ngIf="pizzaOrders.size >= 1">
+    <div
+      class="row" *ngFor="let order of pizzaOrders"
+      style="display: flex; flex: 1; flex-direction: row; flex-wrap: wrap;
+             width: 100%; align-items: center; justify-content: center; padding: 10px"
+    >
+      <div class="row" style="width: 100%">
+
+        <div class="col-sm">
+          <button
+            type="button" class="btn btn-danger btn-lg" style="width: 100%"
+            disabled
+          >
+            {{order.pizza.size}} @{{order.pizza.price}}
+          </button>
+        </div>
+
+        <div class="col-sm">
+          <select class="form-control" (click)="_addToppingToOrder(order, $event.target.value, choices[0])">
+            <option value="0000">Basic Topping</option>
+            <optgroup *ngFor="let topping of basicToppings" label="{{topping.name}}">
+              <option *ngFor="let size of topping.sizes"
+                      value="{{topping.name}},{{size.size}}"
+                      label="{{topping.name}} {{size.size}} @{{size.price}} "></option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="col-sm">
+          <select class="form-control" (click)="_addToppingToOrder(order, $event.target.value, choices[1])">
+            <option>Deluxe Topping</option>
+            <optgroup *ngFor="let topping of deluxeToppings" label="{{topping.name}}">
+              <option *ngFor="let size of topping.sizes"
+                      value="{{topping.name}},{{size.size}}"
+                      label="{{topping.name}} {{size.size}} @{{size.price}} "></option>
+            </optgroup>
+          </select>
+        </div>
+
+        <div class="col-sm">
+          Total @{{order.pizza.price + _pizzaOrderToppingsCost(order)}}
+        </div>
+
+        <div class="col-sm">
+          <button type="button" class="btn btn-danger btn-sm" style="width: 100%"
+                  (click)="deletePizzaOrder(order)">
+            Cancel
+          </button>
+        </div>
+
+      </div>
+
+      <div class="row" style="width: 100%">
+        <div
+          *ngIf="order.toppings && order.toppings.size >= 1" style="width: 100%; padding-left: 5%; padding-right: 5%"
+        >
+
+          <h3>Toppings</h3>
+
+          <div style="display: flex; flex: 1; flex-direction: row; flex-wrap: wrap">
+            <div
+              *ngFor="let pizzaTopping of order.toppings"
+              style="min-width: 25%; flex-basis: 25%; padding: 5px"
+            >
+                  <span style="margin-top: 10px">
+                    {{pizzaTopping.topping.name}} {{pizzaTopping.size.size}} @ {{pizzaTopping.size.price}}
+                  </span>
+              &nbsp;<button type="button" class="btn btn-outline-danger"
+                            (click)="_removeToppingFromPizzaOrder(pizzaTopping, order)">XX
+            </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+    </div>
+  </div>
+  <br>
+  <div *ngIf="pizzaOrders.size >= 1"
+       style="display: flex; flex: 1; flex-direction: row; flex-wrap: nowrap; width: 100%; align-items: flex-end; justify-content: flex-end"
+  >
+    <button type="button" class="btn btn-outline-danger" (click)="clearAllOrders()">Clear Orders</button>
+    <button type="button" class="btn btn-outline-success" disabled>
+      Total @{{pizzaOrderCosting.total}}, V.A.T_16% @{{pizzaOrderCosting.vat}}, Subtotal @{{pizzaOrderCosting.subTotal}}/=
+    </button>
+    <button type="button" class="btn btn-outline-success">Submit</button>
+  </div>
+
+</div>
+
+<router-outlet></router-outlet>
